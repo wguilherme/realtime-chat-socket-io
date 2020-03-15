@@ -1,9 +1,16 @@
 const express = require("express");
 const app = express();
-app.get("/", (req, res, next) => {
-  res.send("<h1>Hello World</h1>");
+const server = require("http").createServer(app);
+const path = require("path");
+const io = require("socket.io")(server);
+app.use(express.static(path.join(__dirname, "/static")));
+io.on("connection", socket => {
+  console.log("Some client connected");
+  socket.on("chat", message => {
+    io.emit("chat", message);
+  });
 });
 const port = process.env.PORT || 3000;
-app.listen(port, () => {
+server.listen(port, () => {
   console.log("listening on: ", port);
 });
